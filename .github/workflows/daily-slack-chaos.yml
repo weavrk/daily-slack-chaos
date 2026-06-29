@@ -4,7 +4,14 @@ on:
   schedule:
     # 13:00 UTC ≈ 9am US Eastern (summer) / 8am (winter). Adjust to taste.
     - cron: '0 13 * * *'
-  workflow_dispatch: {}   # manual "Run workflow" button in the Actions tab
+  workflow_dispatch:      # manual "Run workflow" button in the Actions tab
+    inputs:
+      section:
+        description: "Force a section (leave blank for the normal date-based random pick)"
+        required: false
+        default: ""
+        type: choice
+        options: ["", "word", "gcs", "media"]
 
 permissions:
   contents: write   # needed to commit the dedup log back to the repo
@@ -26,6 +33,8 @@ jobs:
           # Slack incoming-webhook URL. Read from the environment inside the run;
           # never hardcoded in the repo. Set this as a repo secret.
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          # Optional manual override of the section. Empty on scheduled runs.
+          FORCE_SECTION: ${{ inputs.section }}
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           claude_args: |
@@ -44,6 +53,11 @@ jobs:
               Step 0 entirely. The log lives in the repo working directory at
               `./slack-daily-log.txt`. Read it at the start (it may not exist yet —
               that's fine) and append today's entry to that same path at the end.
+            - Section override: if the environment variable FORCE_SECTION is set
+              to a non-empty value (`word`, `gcs`, or `media`), SKIP the date-based
+              random pick in Step 1 and use that section directly. If FORCE_SECTION
+              is empty or unset, do the normal random pick. (For `gcs`, the doc's
+              own fallback to `word` on image-fetch failure still applies.)
             - Send EXACTLY ONE post. Print the HTTP status from Slack.
             - Do not commit anything — a later workflow step handles the commit.
 
