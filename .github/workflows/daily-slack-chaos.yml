@@ -1,0 +1,62 @@
+name: Daily Slack Chaos
+
+on:
+  schedule:
+    # 13:00 UTC ≈ 9am US Eastern (summer) / 8am (winter). Adjust to taste.
+    - cron: '0 13 * * *'
+  workflow_dispatch: {}   # manual "Run workflow" button in the Actions tab
+
+permissions:
+  contents: write   # needed to commit the dedup log back to the repo
+
+concurrency:
+  group: daily-slack-chaos
+  cancel-in-progress: false
+
+jobs:
+  drop:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate and send today's drop
+        uses: anthropics/claude-code-action@v1
+        env:
+          # Slack incoming-webhook URL. Read from the environment inside the run;
+          # never hardcoded in the repo. Set this as a repo secret.
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: |
+            --max-turns 20
+            --model sonnet
+            --allowedTools WebSearch,Bash,Read,Write
+          prompt: |
+            Follow the instructions in `daily-slack-chaos.md` to produce and send
+            today's single Slack drop. Apply these overrides for this GitHub Actions
+            environment:
+
+            - SLACK_WEBHOOK_URL: read it from the environment variable of the same
+              name (e.g. `os.environ["SLACK_WEBHOOK_URL"]` in Python). Do NOT print
+              it. Never hardcode it.
+            - Persistent dedup log: ignore the `mnt/outputs/` and `~/` logic in
+              Step 0 entirely. The log lives in the repo working directory at
+              `./slack-daily-log.txt`. Read it at the start (it may not exist yet —
+              that's fine) and append today's entry to that same path at the end.
+            - Send EXACTLY ONE post. Print the HTTP status from Slack.
+            - Do not commit anything — a later workflow step handles the commit.
+
+            Finish by reporting: which section ran, what was dedup'd out, the Slack
+            HTTP status, and whether ./slack-daily-log.txt was updated.
+
+      - name: Commit updated dedup log
+        run: |
+          git add slack-daily-log.txt 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No log change to commit."
+            exit 0
+          fi
+          git config user.name  "daily-slack-chaos[bot]"
+          git config user.email "actions@github.com"
+          git commit -m "log: daily drop $(date -u +%Y-%m-%d)"
+          git push
