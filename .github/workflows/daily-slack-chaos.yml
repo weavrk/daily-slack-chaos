@@ -51,6 +51,8 @@ jobs:
             HTTP status, and whether ./slack-daily-log.txt was updated.
 
       - name: Commit updated dedup log
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git add slack-daily-log.txt 2>/dev/null || true
           if git diff --cached --quiet; then
@@ -60,4 +62,4 @@ jobs:
           git config user.name  "daily-slack-chaos[bot]"
           git config user.email "actions@github.com"
           git commit -m "log: daily drop $(date -u +%Y-%m-%d)"
-          git push
+          git push "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "HEAD:${GITHUB_REF_NAME}"
