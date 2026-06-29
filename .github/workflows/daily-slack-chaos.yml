@@ -2,8 +2,10 @@ name: Daily Slack Chaos
 
 on:
   schedule:
-    # 13:00 UTC ≈ 9am US Eastern (summer) / 8am (winter). Adjust to taste.
-    - cron: '0 13 * * *'
+    # 14:00 UTC = 9am US Central during CDT (summer). GitHub cron is UTC and does
+    # NOT observe DST, so in winter (CST) this fires at 8am Central. To keep it at
+    # 9am through winter, change to '0 15 * * *' around early November.
+    - cron: '0 14 * * *'
   workflow_dispatch:      # manual "Run workflow" button in the Actions tab
     inputs:
       section:
