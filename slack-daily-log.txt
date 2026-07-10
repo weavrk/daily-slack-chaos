@@ -54,3 +54,8 @@ Word of the Day: Workslop
 _[WURK-slop]_ — AI-generated work (a report, email, or deck) that looks polished but is low-effort and unreviewed, dumping the real work of fixing it onto someone else.
 "He sent over a ten-page strategy doc in five minutes, but it was total workslop and I had to redo half of it."
 
+--- [2026-07-10] (word) ---
+*📚 Word of the Day: Side quest*
+_[side kwest]_ — a small, unplanned detour from your main task that pulls your time and focus before you get back on track.
+"Fixing that typo turned into a whole side quest once I found three broken links in the same doc."
+
