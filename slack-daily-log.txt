@@ -216,3 +216,8 @@ _[FOH-boh]_ — short for "fear of becoming obsolete," the workplace anxiety tha
 _[WERK-slop]_ — AI-generated work that looks polished but is low-quality, vague, or wrong, leaving someone else to clean it up.
 "He turned the deck around in ten minutes, but it was pure workslop — I spent an hour fixing the numbers."
 
+--- [2026-08-19] (word) ---
+*📚 Word of the Day: AI-washing*
+_[AY-eye WASH-ing]_ — when a company exaggerates or fakes how much artificial intelligence is really behind a product, to look more cutting-edge.
+"Their 'AI-powered' scheduling tool turned out to be a spreadsheet and an intern — classic AI-washing."
+
