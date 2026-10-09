@@ -13,7 +13,7 @@ on:
         required: false
         default: ""
         type: choice
-        options: ["", "word", "gcs", "media"]
+        options: ["", "word", "gcs", "media", "beast"]
 
 permissions:
   contents: write   # needed to commit the dedup log back to the repo
@@ -56,10 +56,10 @@ jobs:
               `./slack-daily-log.txt`. Read it at the start (it may not exist yet —
               that's fine) and append today's entry to that same path at the end.
             - Section override: if the environment variable FORCE_SECTION is set
-              to a non-empty value (`word`, `gcs`, or `media`), SKIP the date-based
+              to a non-empty value (`word`, `gcs`, `media`, or `beast`), SKIP the date-based
               random pick in Step 1 and use that section directly. If FORCE_SECTION
-              is empty or unset, do the normal random pick. (For `gcs`, the doc's
-              own fallback to `word` on image-fetch failure still applies.)
+              is empty or unset, do the normal random pick. (For `gcs` and `beast`,
+              the doc's own fallback to `word` on fetch failure still applies.)
             - Send EXACTLY ONE post. Print the HTTP status from Slack.
             - Do not commit anything — a later workflow step handles the commit.
 
